@@ -50,7 +50,7 @@ public:
 		ImGui::End();
 
 		ImGui::Begin("Scene");
-		for (size_t i = 0; i < m_Scene.Sphere.size(); i++) 
+		for (int i = 0; i < m_Scene.Sphere.size(); i++) 
 		{
 			ImGui::PushID(i);
 
@@ -73,7 +73,6 @@ public:
 
 		m_ViewportWidth = ImGui::GetContentRegionAvail().x;
 		m_ViewportHeight = ImGui::GetContentRegionAvail().y;
-
 		auto image = m_Renderer.GetFinalImage();
 		if (image)
 		{
