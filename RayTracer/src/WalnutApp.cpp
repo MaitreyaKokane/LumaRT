@@ -19,18 +19,27 @@ public:
 	ExampleLayer()
 		:m_Camera(45.0f, 1.0f, 100.0f)
 	{
+		Material& Sphere_1 = m_Scene.Material.emplace_back();
+		Sphere_1.Albedo = { 0.93725490f, 0.91372549f, 0.87843137f };
+		Sphere_1.Roughness = { 1.0f};
+
+
+		Material& Sphere_2 = m_Scene.Material.emplace_back();
+		Sphere_2.Albedo = { 0.05882353f, 0.61960784f, 0.60000000f };
+		Sphere_2.Roughness = { 1.0f };
+
 		{
 			Sphere sphere;
 			sphere.Position = { 0.0f,0.0f,0.0f };
-			sphere.Albedo = { 1.0f,0.0f,1.0f };
-			sphere.Radius = { 2.0f };
+			sphere.Radius = { 1.0f };
+			sphere.MaterialIndex = { 0 };
 			m_Scene.Sphere.push_back(sphere);
 		}
 		{
 			Sphere sphere;
-			sphere.Position = { 0.0f,0.0f,1.0f };
-			sphere.Albedo = { 1.0f,1.0f,0.0f };
-			sphere.Radius = { 0.5f };
+			sphere.Position = { 0.0f,-101.7f,4.0f };
+			sphere.Radius = { 100.5f };
+			sphere.MaterialIndex = { 1 };
 			m_Scene.Sphere.push_back(sphere);
 		}
 
@@ -47,6 +56,12 @@ public:
 		if (ImGui::Button("Render")) {
 			Render();
 		};
+
+		ImGui::Checkbox("Accumulate", &m_Renderer.GetSettings().Accumulate);
+
+		if (ImGui::Button("Reset")) {
+			m_Renderer.ResetFrameIndex();
+		};
 		ImGui::End();
 
 		ImGui::Begin("Scene");
@@ -58,11 +73,22 @@ public:
 
 			ImGui::DragFloat3("Position", glm::value_ptr(sphere.Position), 0.1f);
 			ImGui::DragFloat("Radius", &sphere.Radius, 0.1f);
-			ImGui::ColorEdit3("Albedo", glm::value_ptr(sphere.Albedo));
+			ImGui::DragInt("Material", &sphere.MaterialIndex, 1.0f, 0.0f, (int)m_Scene.Material.size() - 1);
 
-			ImGui::Separator;
+			ImGui::Separator();
 			ImGui::PopID();
 
+		}
+		for (size_t i = 0; i < m_Scene.Material.size(); i++) 
+		{
+			ImGui::PushID(i);
+			Material& material = m_Scene.Material[i];
+			ImGui::ColorEdit3("Albedo", glm::value_ptr(material.Albedo));
+			ImGui::DragFloat("Roughness", &material.Roughness,0.05f,0.0f,1.0f);
+			ImGui::DragFloat("Metallic", &material.Metallic, 0.05f, 0.0f, 1.0f);
+
+			ImGui::Separator();
+			ImGui::PopID();
 		}
 		ImGui::End();
 
